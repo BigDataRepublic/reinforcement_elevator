@@ -75,6 +75,8 @@ var getCodeObjFromCode = function(code) {
     }
     /* jslint evil:true */
     obj = eval(code);
+    console.log("THIS IS THE CODE")
+    console.log(obj)
     /* jshint evil:false */
     if(typeof obj.init !== "function") {
         throw "Code must contain an init function";

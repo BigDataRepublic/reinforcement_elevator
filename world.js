@@ -1,8 +1,8 @@
 
-
+var creator = {};
 
 var createWorldCreator = function() {
-    var creator = {};
+    
 
     creator.createFloors = function(floorCount, floorHeight, errorHandler) {
         var floors = _.map(_.range(floorCount), function(e, i) {
@@ -221,7 +221,7 @@ var createWorldCreator = function() {
 };
 
 
-var createWorldController = function(dtMax) {
+var createWorldController = function(dtMax, app) {
     var controller = riot.observable({});
     controller.timeScale = 1.0;
     controller.isPaused = true;
@@ -236,7 +236,7 @@ var createWorldController = function(dtMax) {
                     firstUpdate = false;
                     // This logic prevents infite loops in usercode from breaking the page permanently - don't evaluate user code until game is unpaused.
                     try {
-                        codeObj.init(world.elevatorInterfaces, world.floors);
+                        codeObj.init(world,app.history);
                         world.init();
                     } catch(e) { controller.handleUserCodeError(e); }
                 }

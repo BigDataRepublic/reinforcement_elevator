@@ -142,9 +142,7 @@ $(function() {
 
     var app = riot.observable({});
 
-    var codeState = {};
-
-    app.startChallenge = function(challengeIndex, autoStart=false) {
+    app.startChallenge = function(challengeIndex, autoStart) {
         if(typeof app.world !== "undefined") {
             app.world.unWind();
             // TODO: Investigate if memory leaks happen here
@@ -170,27 +168,14 @@ $(function() {
                 app.worldController.setPaused(true);
                 if(challengeStatus) {
                     presentFeedback($feedback, feedbackTempl, app.world, "Success!", "Challenge completed", createParamsUrl(params, { challenge: (challengeIndex + 2)}));
-                    console.log(app.history)
                 } else {
-                    var world = app.world;
                     presentFeedback($feedback, feedbackTempl, app.world, "Challenge failed", "Maybe your program needs an improvement?", "");
-                    codeObj.finish({
-                        "transport": world.transportedCounter,
-                        "eplapsed": world.elapsedTime,
-                        "transportedPerSec": world.transportedPerSec,
-                        "avgWaitTime" : world.avgWaitTime,
-                        "maxWaitTime" : world.maxWaitTime,
-                        "moveCount" : world.moveCount
-                              })
-                   
-                    app.startStopOrRestart();//(challengeIndex, autoStart);
-
+                    startChallenge(challengeIndex+1, autostart);
                 }
             }
         });
 
-        codeObj = editor.getCodeObj();
-        codeObj.state = codeState;
+        var codeObj = editor.getCodeObj();
         console.log("Starting...");
         app.worldController.start(app.world, codeObj, window.requestAnimationFrame, autoStart);
     };
@@ -208,8 +193,8 @@ $(function() {
 
     app.startStopOrRestart = function() {
         if(app.world.challengeEnded) {
-                app.startChallenge(app.currentChallengeIndex, true);
-        }else {
+            app.startChallenge(app.currentChallengeIndex);
+        } else {
             app.worldController.setPaused(!app.worldController.isPaused);
         }
     };
@@ -217,7 +202,7 @@ $(function() {
     
 
     editor.on("apply_code", function() {
-        app.startChallenge(app.currentChallengeIndex, false);
+        app.startChallenge(app.currentChallengeIndex, true);
     });
     editor.on("code_success", function() {
         presentCodeStatus($codestatus, codeStatusTempl);
