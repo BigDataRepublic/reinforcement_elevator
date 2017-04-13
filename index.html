@@ -94,15 +94,14 @@
         elevators = world.elevatorInterfaces;
         floors = world.floors;
 
-        var elevator = elevators[0]; // Let's use the first elevator
-
-        // Whenever the elevator is idle (has no more queued destinations) ...
-        elevator.on("idle", function() {
-            // let's go to all the floors (or did we forget one?)
-            elevator.goToFloor(0);
-            elevator.goToFloor(1);
-
-        });
+        elevators.forEach(function(elevator){
+            elevator.on("idle", function() {
+                // let's go to all the floors (or did we forget one?)
+                for (floor_index in floors) {
+                    elevator.goToFloor(floor_index)
+                }
+            });
+        });               
     },
         update: function(dt, elevators, floors) {
             // We normally don't need to do anything here
