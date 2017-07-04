@@ -87,21 +87,26 @@
 {
     init: function(world) {
         var directionTranslator = {'up': 1,
-                                  'down': -1,
-                                  'stopped': 0}
-        
-        function create_world_report(elevator){
+                                   'down': -1,
+                                   'stopped': 0}
+
+        function createWorldReport(elevator, floors){
             var report = {};
             report.goingUpIndicator = elevator.goingUpIndicator();
             report.goingDownIndicator = elevator.goingDownIndicator();
             report.maxPassengerCount = elevator.maxPassengerCount();
             report.loadFactor = elevator.loadFactor();
             report.currentFloor = elevator.currentFloor();
-            
+
             report.destinationDirection = directionTranslator[elevator.destinationDirection()];
-            
+
             report.pressedFloors = elevator.getPressedFloors();
-            
+
+            floors.forEach(function(floor){
+                var floorNumber = "floor"+floor.level;
+                report[floorNumber] = {'buttonStates' : floor.buttonStates}
+            });
+
             console.log(report);
             return(report);
         }
@@ -114,21 +119,30 @@
         elevators = world.elevatorInterfaces;
         floors = world.floors;
 
+        floors.forEach(function(floor){
+            console.log(floor);
+        });
+
         elevators.forEach(function(elevator){
             elevator.on("idle", function() {
                 // let's go to all the floors (or did we forget one?)
+                createWorldReport(elevator, floors);
                 for (floor_index in floors) {
                     elevator.goToFloor(floor_index)
                 }
+            });
+
+            elevator.on("floor_button_pressed", function() {
+
             });
         });               
     },
         update: function(dt, elevators, floors) {
             // We normally don't need to do anything here
         },
-        finish: function(result) {
-            this.state.history.push(result);
-        }
+            finish: function(result) {
+                this.state.history.push(result);
+            }
 }
     </script>
     <script type="text/plain" id="devtest-elev-implementation">
