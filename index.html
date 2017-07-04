@@ -86,6 +86,26 @@
     <script type="text/plain" id="default-elev-implementation">
 {
     init: function(world) {
+        var directionTranslator = {'up': 1,
+                                  'down': -1,
+                                  'stopped': 0}
+        
+        function create_world_report(elevator){
+            var report = {};
+            report.goingUpIndicator = elevator.goingUpIndicator();
+            report.goingDownIndicator = elevator.goingDownIndicator();
+            report.maxPassengerCount = elevator.maxPassengerCount();
+            report.loadFactor = elevator.loadFactor();
+            report.currentFloor = elevator.currentFloor();
+            
+            report.destinationDirection = directionTranslator[elevator.destinationDirection()];
+            
+            report.pressedFloors = elevator.getPressedFloors();
+            
+            console.log(report);
+            return(report);
+        }
+
         if(!this.state.history) {
             this.state.history = [];
         }
